@@ -7,7 +7,14 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.idea/
+.gradle/
+gradle/
 env/
+*.iml
+*.ipr
+*.iws
+local.properties
 build/
 develop-eggs/
 dist/
