@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HobbyClient</string>
+    <string name="button_text">Get info from server</string>
+</resources>
