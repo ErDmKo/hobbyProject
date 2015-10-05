@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title></title>
+    <title>Page title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
-    <h1>Hi ${name}</h1>
+    <img th:src="@{/img/test.jpg}"/>
+    <h1>Hi <span th:text="${name}"></span></h1>
 </body>
 </html>
