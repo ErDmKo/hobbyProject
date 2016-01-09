@@ -3,9 +3,10 @@
 <head>
     <title>Page title</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script th:src="@{/js/bundle.js}"></script>
 </head>
 <body>
-    <img th:src="@{/img/test.jpg}"/>
-    <h1>Hi <span th:text="${name}"></span></h1>
+    <div id="bodyContanier"></div>
 </body>
+<script th:src="@{/js/main.js}"></script>
 </html>
