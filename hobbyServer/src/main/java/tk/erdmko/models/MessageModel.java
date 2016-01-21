@@ -5,7 +5,7 @@ public class MessageModel {
     private String text;
 
     public String getText() {
-        return text;
+        return new StringBuilder(text).reverse().toString();
     }
 
 }

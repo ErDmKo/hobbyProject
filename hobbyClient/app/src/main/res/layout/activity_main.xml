@@ -15,7 +15,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editText" />
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/textView"
+            android:layout_gravity="center" />
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -28,14 +33,15 @@
                 android:id="@+id/urlButton"
                 android:onClick="sendRequest"
                 android:layout_gravity="center_horizontal|top" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_image"
+                android:id="@+id/imageButton"
+                android:onClick="getImage"
+                android:layout_gravity="center_horizontal|top" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView"
-            android:layout_gravity="center" />
     </LinearLayout>
 
 </RelativeLayout>

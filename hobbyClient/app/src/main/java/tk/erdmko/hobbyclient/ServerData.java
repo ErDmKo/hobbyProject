@@ -5,4 +5,5 @@ package tk.erdmko.hobbyclient;
  */
 public class ServerData {
     public String text;
+    public String reason;
 }

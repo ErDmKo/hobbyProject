@@ -24,6 +24,7 @@ class Hello extends React.Component {
         });
     });
   }
+
   sendMessage() {
     if (this.state.stompClient) {
         this.state.stompClient.send(
