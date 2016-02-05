@@ -2,6 +2,7 @@ package tk.erdmko.conrollers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,8 +24,15 @@ public class FileUploadController {
     @Value("${file.upload.directory}")
     private String fileUploadDirectory;
 
+    private SimpMessagingTemplate template;
+
     @Autowired
     private HttpServletRequest request;
+
+    @Autowired
+    public FileUploadController(SimpMessagingTemplate template) {
+        this.template = template;
+    }
 
     @RequestMapping(value="/upload", method=RequestMethod.POST)
     public @ResponseBody
@@ -39,6 +47,7 @@ public class FileUploadController {
                 FileOutputStream newFile = new FileOutputStream(newFilename);
                 newFile.write(file.getBytes());
                 newFile.close();
+                this.template.convertAndSend("/wsOut", newFilename);
                 return new OkResponse("File downloaded to '"+newFilename+"' path");
             } catch (Exception e) {
                 return new FailResponse(name+" => "+e.getMessage());
