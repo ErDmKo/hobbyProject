@@ -9,14 +9,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import java.io.FileOutputStream;
+import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
 import tk.erdmko.models.FailResponse;
 import tk.erdmko.models.OkResponse;
 import tk.erdmko.models.SimpleJsonResponse;
+import tk.erdmko.models.UrlResponse;
 
 @Controller
 public class FileUploadController {
@@ -43,12 +46,20 @@ public class FileUploadController {
                 String originalFileExtension = file
                         .getOriginalFilename()
                         .substring(file.getOriginalFilename().lastIndexOf("."));
-                String newFilename = fileUploadDirectory + "/" + name + originalFileExtension;
-                FileOutputStream newFile = new FileOutputStream(newFilename);
+                String fileName = name + originalFileExtension;
+                String fullFilename = fileUploadDirectory + fileName;
+                FileOutputStream newFile = new FileOutputStream(fullFilename);
                 newFile.write(file.getBytes());
                 newFile.close();
-                this.template.convertAndSend("/wsOut", newFilename);
-                return new OkResponse("File downloaded to '"+newFilename+"' path");
+                String imagePath = new URL(
+                    MvcUriComponentsBuilder.fromMappingName("WC#getImage").arg(0, name).build()
+                ).getPath();
+
+                this.template.convertAndSend(
+                        "/wsOut",
+                        new UrlResponse(imagePath)
+                );
+                return new OkResponse("File downloaded to '"+fullFilename+"' path");
             } catch (Exception e) {
                 return new FailResponse(name+" => "+e.getMessage());
             }

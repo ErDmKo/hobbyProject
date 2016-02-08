@@ -19,5 +19,8 @@
     "sockjs-client": "^1.0.3",
     "stompjs": "^2.3.3",
     "watchify": "^3.4.0"
+  },
+  "dependencies": {
+    "react-addons-create-fragment": "^0.14.7"
   }
 }
