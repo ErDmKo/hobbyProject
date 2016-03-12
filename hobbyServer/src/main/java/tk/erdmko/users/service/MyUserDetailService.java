@@ -6,6 +6,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,13 +18,14 @@ import tk.erdmko.users.dao.UserDao;
 import tk.erdmko.users.model.User;
 import tk.erdmko.users.model.UserRole;
 
-// @Service("userDetailsService")
+@Service("userDetailsService")
 public class MyUserDetailService implements UserDetailsService {
 
     @Autowired
     private UserDao userDao;
 
     @Override
+    @Transactional(readOnly=true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userDao.findByUserName(username);
         List<GrantedAuthority> authorities =
