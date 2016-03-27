@@ -40,6 +40,13 @@
                 android:id="@+id/imageButton"
                 android:onClick="getImage"
                 android:layout_gravity="center_horizontal|top" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_socket"
+                android:id="@+id/socketButton"
+                android:onClick="getQueue"
+                android:layout_gravity="center_horizontal|top" />
         </LinearLayout>
 
     </LinearLayout>

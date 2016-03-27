@@ -14,7 +14,6 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
-
 import javax.sql.DataSource;
 
 @SpringBootApplication
@@ -39,6 +38,7 @@ public class Application extends SpringBootServletInitializer {
         CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
         filter.setIncludeQueryString(true);
         filter.setIncludePayload(true);
+        filter.setIncludeClientInfo(true);
         filter.setMaxPayloadLength(5120);
         return filter;
     }

@@ -2,6 +2,7 @@ package tk.erdmko.hobbyclient;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -12,13 +13,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.mime.TypedFile;
 
@@ -32,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
     protected final String TAG = getClass().getSimpleName();
     private File photoFile;
 
+
+    ConnectionFactory factory = new ConnectionFactory();
+    private void setupConnectionFactory(String host) {
+        factory.setHost(host);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,16 +97,25 @@ public class MainActivity extends AppCompatActivity {
             Thread serverCallThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-
-                    final ServerData serverData = clientAPI.uploadFile(
-                            new TypedFile("image/jpeg", photoFile),
-                            "testFile");
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mText.setText(serverData.text+serverData.reason);
-                        }
-                    });
+                    try {
+                        final ServerData serverData = clientAPI.uploadFile(
+                                new TypedFile("image/jpeg", photoFile),
+                                "testFile");
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mText.setText(serverData.text + serverData.reason);
+                            }
+                        });
+                    } catch (RetrofitError err) {
+                        final String errorTest = err.toString();
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), errorTest, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }});
             serverCallThread.start();
         }
@@ -103,6 +130,57 @@ public class MainActivity extends AppCompatActivity {
 
         return image;
     }
+    public void getQueue(View view) throws URISyntaxException {
+        URL url = null;
+        try {
+            url = new URL(mEditText.getText().toString());
+            setupConnectionFactory(url.getHost());
+            AsyncTask<String, Void, String> serverCallTask = new AsyncTask<String, Void, String>() {
+                @Override
+                protected String doInBackground(String... params) {
+                    Connection connection = null;
+                    try {
+                        connection = factory.newConnection();
+                        String QUEUE_NAME = "hello";
+                        Channel channel = connection.createChannel();
+                        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        Consumer consumer = new DefaultConsumer(channel) {
+                            @Override
+                            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+                                    throws IOException {
+                                final String message = new String(body, "UTF-8");
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mText.setText(message);
+                                    }
+                                });
+                            }
+                        };
+                        channel.basicConsume(QUEUE_NAME, true, consumer);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (TimeoutException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            };
+            serverCallTask.execute("1");
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
     public void sendRequest(View view) {
         String output = mEditText.getText().toString();
         // if (Patterns.WEB_URL.matcher(output).matches()) {
@@ -113,13 +191,25 @@ public class MainActivity extends AppCompatActivity {
             Thread serverCallThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    final ServerData serverData = clientAPI.getServerData();
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mText.setText(serverData.text);
-                        }
-                    });
+                    try {
+                        ServerData serverData = clientAPI.getServerData();
+                        final String text = serverData.text;
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mText.setText(text);
+                            }
+                        });
+                    } catch (RetrofitError err) {
+                        final String errorTest = err.toString();
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), errorTest, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
                 }
             });
             serverCallThread.start();

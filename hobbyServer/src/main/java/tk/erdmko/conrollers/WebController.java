@@ -1,5 +1,7 @@
 package tk.erdmko.conrollers;
 
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -23,6 +25,9 @@ import tk.erdmko.models.SocketResponseModel;
 
 @Controller
 public class WebController {
+
+    @Autowired
+    AmqpTemplate template;
 
     @Value("${file.upload.directory}")
     private String fileUploadDirectory;
@@ -56,6 +61,7 @@ public class WebController {
         Model model
     ) {
         model.addAttribute("name", name);
+        template.convertAndSend("hello", "main page");
         return "index";
     }
 }
