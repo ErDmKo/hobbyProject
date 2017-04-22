@@ -9,7 +9,7 @@
   },
   "author": "ErDmKo",
   "license": "MIT",
-  "devDependencies": {
+    "devDependencies": {
     "babel-preset-es2015": "^6.1.18",
     "babel-preset-react": "^6.1.18",
     "babelify": "^7.2.0",

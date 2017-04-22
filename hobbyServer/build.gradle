@@ -28,6 +28,9 @@ jar {
     version =  '0.1.0'
     zip64 = true
 }
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
 sourceSets {
     main {
         resources {
@@ -54,7 +57,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
         exclude module: "spring-boot-starter-tomcat"
     }
-    providedRuntime("org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}")
+    compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
     compile "org.postgresql:postgresql:9.4.1208"
     compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-amqp"

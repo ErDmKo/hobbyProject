@@ -40,7 +40,7 @@ var ServerTextMessage = (function (_React$Component) {
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ServerTextMessage).call(this, props));
 
         _this.state = {
-            text: '',
+            text: 'Init state',
             url: ''
         };
         return _this;
