@@ -1,0 +1,4 @@
+- name: test_step
+  tag: master
+  service: web
+  command: ls -alh
