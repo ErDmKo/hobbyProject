@@ -35,6 +35,7 @@ public class WebController {
     @MessageMapping("/wsIn")
     @SendTo("/wsOut")
     public SocketResponseModel wsHandler(MessageModel message ) {
+        template.convertAndSend("hello", message.getText());
         return new SocketResponseModel(message.getText());
     }
     @RequestMapping(value = "/images/{fileName}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)

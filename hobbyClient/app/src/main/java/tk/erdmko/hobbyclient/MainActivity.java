@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -72,8 +73,11 @@ public class MainActivity extends AppCompatActivity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "tk.erdmko.fileprovider",
+                        photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
+                        photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
@@ -82,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         String resultInfo = "New Image Added";
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            Log.i(TAG, String.valueOf(data));
+            // data is empty and this ok because photoFile is not
+            Log.i(TAG, String.valueOf(photoFile.length()));
             Toast.makeText(getApplicationContext(), resultInfo, Toast.LENGTH_SHORT).show();
             String output = mEditText.getText().toString();
             // if (Patterns.WEB_URL.matcher(output).matches()) {
@@ -104,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mText.setText(serverData.text + serverData.reason);
+                                mText.setText(String.format("%s exeptions %s", serverData.text, serverData.reason));
                             }
                         });
                     } catch (RetrofitError err) {
@@ -144,12 +149,17 @@ public class MainActivity extends AppCompatActivity {
                         String QUEUE_NAME = "hello";
                         Channel channel = connection.createChannel();
                         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+
                         MainActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
                             }
                         });
+
+                        String message = "Hello World!";
+                        channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
+
                         Consumer consumer = new DefaultConsumer(channel) {
                             @Override
                             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)

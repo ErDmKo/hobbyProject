@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import java.io.FileOutputStream;
-import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,9 +50,8 @@ public class FileUploadController {
                 FileOutputStream newFile = new FileOutputStream(fullFilename);
                 newFile.write(file.getBytes());
                 newFile.close();
-                String imagePath = new URL(
-                    MvcUriComponentsBuilder.fromMappingName("WC#getImage").arg(0, name).build()
-                ).getPath();
+                String imagePath =
+                    MvcUriComponentsBuilder.fromMappingName("WC#getImage").arg(0, name).build();
 
                 this.template.convertAndSend(
                         "/wsOut",
