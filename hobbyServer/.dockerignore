@@ -1,0 +1,9 @@
+./build
+./src/main/resources/node_modules
+gradlew.bat
+local.properties
+.gradle
+.idea
+*.iml
+*.ipr
+*.iws

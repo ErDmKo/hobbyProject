@@ -10,6 +10,9 @@ __pycache__/
 .idea/
 .gradle/
 gradle/
+gradle
+gradlew
+gradlew.bat
 env/
 *.iml
 *.ipr
