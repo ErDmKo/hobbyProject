@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,14 +29,18 @@ public class WebController {
     @Autowired
     AmqpTemplate template;
 
+    @Autowired
+    SimpMessagingTemplate wsTemplate;
+
     @Value("${file.upload.directory}")
     private String fileUploadDirectory;
 
     @MessageMapping("/wsIn")
-    @SendTo("/wsOut")
-    public SocketResponseModel wsHandler(MessageModel message ) {
+    public SocketResponseModel wsHandler(MessageModel message) {
+        SocketResponseModel out = new SocketResponseModel(message.getText());
         template.convertAndSend("hello", message.getText());
-        return new SocketResponseModel(message.getText());
+        wsTemplate.convertAndSend("/wsOut", out);
+        return out;
     }
     @RequestMapping(value = "/images/{fileName}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getImage(@PathVariable String fileName) {

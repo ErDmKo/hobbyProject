@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                                 MainActivity.this.runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mText.setText(message);
+                                        mText.setText(String.format("Message %s", message));
                                     }
                                 });
                             }
