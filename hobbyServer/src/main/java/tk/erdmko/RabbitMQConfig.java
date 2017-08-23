@@ -2,6 +2,7 @@ package tk.erdmko;
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -19,14 +20,21 @@ import tk.erdmko.models.SocketResponseModel;
 @Configuration
 public class RabbitMQConfig {
     final private static String defaultQueueName = "hello";
+
     private Queue defaultQueue = new Queue(defaultQueueName);
+
     private @Value("${spring.amqp.host}") String host;
 
     @Autowired
     private SimpMessagingTemplate webSocket;
 
     @Bean
-    public CachingConnectionFactory connectionFactory() {
+    TopicExchange exchange() {
+        return new TopicExchange("spring-boot-exchange");
+    }
+
+    @Bean
+     CachingConnectionFactory connectionFactory() {
         CachingConnectionFactory connectionFactory =
                 new CachingConnectionFactory(host);
         return connectionFactory;
@@ -35,7 +43,7 @@ public class RabbitMQConfig {
     @Bean
     public AmqpAdmin amqpAdmin() {
         AmqpAdmin out = new RabbitAdmin(connectionFactory());
-        //out.declareQueue(defaultQueue);
+        out.declareQueue(defaultQueue);
         return out;
     }
 
