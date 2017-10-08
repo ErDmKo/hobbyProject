@@ -48,8 +48,8 @@ public class RabbitMQConfig {
     }
 
     @RabbitListener(queues = RabbitMQConfig.defaultQueueName)
-    public void processMobileMessages(byte[] message) throws UnsupportedEncodingException {
-        webSocket.convertAndSend("/wsOut", new SocketResponseModel(new String(message, "UTF-8")));
+    public void processMobileMessages(String message) throws UnsupportedEncodingException {
+        webSocket.convertAndSend("/wsOut", new SocketResponseModel(message));
     }
 
     @Bean

@@ -66,7 +66,7 @@ public class WebController {
         Model model
     ) {
         model.addAttribute("name", name);
-        template.convertAndSend("hello", "main page");
+        template.convertAndSend("hello", "main, page");
         return "index";
     }
 }
