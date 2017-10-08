@@ -1,0 +1,66 @@
+apiVersion: extensions/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    app: api
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: api
+      name: api
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          value: apptrack
+        - name: POSTGRES_USER
+          value: apptrack
+        image: postgres
+        imagePullPolicy: Always
+        name: db
+        resources: {}
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - image: rabbitmq
+        imagePullPolicy: Always
+        name: broker
+        resources: {}
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - env:
+        - name: CONFIG
+          value: kubernetes
+        image: gcr.io/without-mining/github-erdmko-hobbyproject:4ff8979f29820a166f68083716692a750b112222
+        imagePullPolicy: Always
+        name: api
+        resources: {}
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      hostAliases:
+      - hostnames:
+        - db
+        - broker
+        ip: 127.0.0.1
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
