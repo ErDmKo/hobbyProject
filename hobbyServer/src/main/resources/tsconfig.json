@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "commonjs",
+        "removeComments": true,
+        "experimentalDecorators": true,
+        "emitDecoratorsMetadata": true,
+        "allowJs": true,
+        "lib": ["es2017", "dom"],
+        "noLib": false,
+        "jsx": "react",
+        "sourceDir": "./assets/"
+    }
+}

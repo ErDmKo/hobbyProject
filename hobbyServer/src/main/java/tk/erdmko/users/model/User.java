@@ -41,6 +41,7 @@ public class User {
     public long getId() {
         return id;
     }
+
     @Column(name = "enabled", nullable = false)
     public boolean isEnabled() {
         return enabled;
@@ -51,6 +52,8 @@ public class User {
     public String getPassword() {
         return password;
     }
+
+
     @Column(name = "username", unique = true,
             nullable = false, length = 60)
     public String getUsername() {

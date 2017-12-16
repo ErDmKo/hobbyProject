@@ -3,24 +3,25 @@
   "version": "1.0.0",
   "description": "Web client for webServer",
   "main": "index.js",
-  "scripts": {
-    "browserify-js": "browserify assets/js/main.jsx -o static/js/main.js -t [ babelify --presets [ es2015 react ] ] -v",
-    "watch-js": "watchify assets/js/main.jsx -o static/js/main.js -t [ babelify --presets [ es2015 react ] ] -v"
-  },
   "author": "ErDmKo",
   "license": "MIT",
-    "devDependencies": {
-    "babel-preset-es2015": "^6.1.18",
-    "babel-preset-react": "^6.1.18",
-    "babelify": "^7.2.0",
-    "browserify": "^11.2.0",
-    "react": "^0.14.2",
-    "react-dom": "^0.14.2",
+  "scripts": {
+    "start": "webpack --env dev --watch"
+  },
+  "devDependencies": {
+    "@types/react": "^16.0.31",
+    "@types/react-dom": "^16.0.3",
+    "autoprefixer": "^7.1.2",
+    "awesome-typescript-loader": "^3.4.1",
+    "classnames": "^2.2.5",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "sockjs-client": "^1.0.3",
     "stompjs": "^2.3.3",
-    "watchify": "^3.4.0"
+    "typescript": "^2.6.2",
+    "webpack": "^3.10.0"
   },
   "dependencies": {
-    "react-addons-create-fragment": "^0.14.7"
+    "webpack-merge": "^4.1.1"
   }
 }
