@@ -26,7 +26,7 @@ export class ServerTextMessage<T, E> extends React.Component<Props, State> {
     }
     render() {
         return (
-            <div>{this.state.text}, {this.state.url}</div>
+            <div>Text "{this.state.text}", Url "{this.state.url}"</div>
         )
     }
 };

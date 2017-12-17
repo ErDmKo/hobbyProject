@@ -45,6 +45,9 @@ idea {
     }
 }
 // In this section you declare the dependencies for your production and test code
+bootRun {
+    addResources = true
+}
 dependencies {
 
     repositories {

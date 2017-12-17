@@ -1,6 +1,7 @@
 package tk.erdmko.conrollers;
 
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -27,7 +28,7 @@ import tk.erdmko.models.SocketResponseModel;
 public class WebController {
 
     @Autowired
-    AmqpTemplate template;
+    RabbitTemplate template;
 
     @Autowired
     SimpMessagingTemplate wsTemplate;

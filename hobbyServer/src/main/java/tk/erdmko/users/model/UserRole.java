@@ -34,7 +34,7 @@ public class UserRole {
 
     @Id
     @Column(name="id", unique = true, nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer getUserRoleId() {
         return this.userRoleId;
     }

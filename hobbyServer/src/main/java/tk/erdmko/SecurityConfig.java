@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -29,7 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/upload");
+        web.ignoring()
+                .antMatchers("/users/register", "/upload", "/users/login");
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -46,6 +48,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter() throws Exception {
+        RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter = new RequestHeaderAuthenticationFilter();
+        requestHeaderAuthenticationFilter.setPrincipalRequestHeader("X-AUTH-TOKEN");
+        requestHeaderAuthenticationFilter.setAuthenticationManager(authenticationManager());
+        requestHeaderAuthenticationFilter.setExceptionIfHeaderMissing(false);
+
+        return requestHeaderAuthenticationFilter;
     }
 
 }

@@ -21,7 +21,7 @@ import tk.erdmko.models.SocketResponseModel;
 public class RabbitMQConfig {
     final private static String defaultQueueName = "hello";
 
-    private Queue defaultQueue = new Queue(defaultQueueName);
+    private Queue defaultQueue = new Queue(defaultQueueName, true);
 
     private @Value("${spring.amqp.host}") String host;
 
@@ -46,7 +46,9 @@ public class RabbitMQConfig {
         out.declareQueue(defaultQueue);
         return out;
     }
-
+    /* Some desirialisation bug here message is bytes looks like
+    * 72,101,108,108,111,32,87,111,114,108,100,3
+    */
     @RabbitListener(queues = RabbitMQConfig.defaultQueueName)
     public void processMobileMessages(String message) throws UnsupportedEncodingException {
         webSocket.convertAndSend("/wsOut", new SocketResponseModel(message));

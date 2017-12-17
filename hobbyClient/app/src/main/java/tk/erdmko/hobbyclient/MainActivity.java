@@ -148,12 +148,16 @@ public class MainActivity extends AppCompatActivity {
                         connection = factory.newConnection();
                         String QUEUE_NAME = "hello";
                         Channel channel = connection.createChannel();
-                        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+                        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 
                         MainActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        "Connected",
+                                        Toast.LENGTH_SHORT
+                                ).show();
                             }
                         });
 
@@ -175,9 +179,31 @@ public class MainActivity extends AppCompatActivity {
                         };
                         channel.basicConsume(QUEUE_NAME, true, consumer);
                     } catch (IOException e) {
+                        final String message = e.toString();
                         e.printStackTrace();
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        message,
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+                        });
                     } catch (TimeoutException e) {
                         e.printStackTrace();
+                        final String message = e.toString();
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        message,
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+                        });
                     }
                     return null;
                 }

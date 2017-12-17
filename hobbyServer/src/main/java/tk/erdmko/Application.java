@@ -41,16 +41,7 @@ public class Application extends SpringBootServletInitializer {
                 .run(Application.class, args);
 
     }
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        final LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-        emf.setDataSource(dataSource());
-        emf.setPackagesToScan(new String[] { "tk.erdmko.users.model" });
 
-        final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        emf.setJpaVendorAdapter(vendorAdapter);
-        return emf;
-    }
     @Bean
     public CommonsRequestLoggingFilter requestLoggingFilter() {
         CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
@@ -66,26 +57,7 @@ public class Application extends SpringBootServletInitializer {
     }
 
     @Bean
-    @Primary
-    public LocalSessionFactoryBean sessionFactory() {
-        LocalSessionFactoryBean asFactoryBean =
-                new LocalSessionFactoryBean();
-        asFactoryBean.setDataSource(dataSource());
-        asFactoryBean.setPackagesToScan(new String[] { "tk.erdmko.users.model" });
-        // additional config
-        return asFactoryBean;
-    }
-    @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
-    }
-    @Bean
-    @Autowired
-    public HibernateTransactionManager transactionManager(SessionFactory sessionFactory){
-        HibernateTransactionManager txManager
-                = new HibernateTransactionManager();
-        txManager.setSessionFactory(sessionFactory);
-
-        return txManager;
     }
 }
