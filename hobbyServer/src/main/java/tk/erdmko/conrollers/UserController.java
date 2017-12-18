@@ -2,16 +2,10 @@ package tk.erdmko.conrollers;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.logging.Logger;
 
 import tk.erdmko.models.OkResponse;
 import tk.erdmko.models.SimpleJsonResponse;
@@ -33,8 +27,9 @@ public class UserController {
     @RequestMapping(value = "/users/register", method = RequestMethod.POST)
     public SimpleJsonResponse registration(@RequestBody User input) {
         input.setEnabled(true);
+        String pass = input.getPassword();
         userService.save(input);
-        securityService.autoLogin(input.getUsername(), input.getPassword());
+        securityService.autoLogin(input.getUsername(), pass);
         return new OkResponse("OK");
     }
     @RequestMapping(value = "/users/authenticate", method = RequestMethod.POST)

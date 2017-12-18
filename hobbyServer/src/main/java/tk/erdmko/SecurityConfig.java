@@ -31,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/users/register", "/upload", "/users/login");
+                .antMatchers("/users/register", "/upload", "/users/authenticate");
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {

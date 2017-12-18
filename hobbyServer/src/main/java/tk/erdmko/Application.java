@@ -39,7 +39,6 @@ public class Application extends SpringBootServletInitializer {
     public static void main(String[] args){
         ApplicationContext context = SpringApplication
                 .run(Application.class, args);
-
     }
 
     @Bean
