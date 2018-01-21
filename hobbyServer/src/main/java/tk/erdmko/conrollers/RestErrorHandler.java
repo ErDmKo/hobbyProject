@@ -3,6 +3,7 @@ package tk.erdmko.conrollers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -27,6 +28,15 @@ import tk.erdmko.models.ValidationErrorDTO;
  */
 @ControllerAdvice
 public class RestErrorHandler {
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ValidationErrorDTO proccessValidationError(BadCredentialsException ex) {
+        ValidationErrorDTO out = new ValidationErrorDTO();
+        out.addFieldError("Auth", ex.getMessage());
+        return out;
+    }
 
     @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
