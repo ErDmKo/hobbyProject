@@ -12,9 +12,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})}
+)
 public class User {
     private long id;
     private String username;
@@ -48,7 +54,9 @@ public class User {
     }
 
     @Column(name = "password",
-            nullable = false, length = 60)
+            nullable = false, length = 150)
+    @NotNull
+    @Size(min=5, max=150)
     public String getPassword() {
         return password;
     }
@@ -56,6 +64,8 @@ public class User {
 
     @Column(name = "username", unique = true,
             nullable = false, length = 60)
+    @NotNull
+    @Size(min=2, max=30)
     public String getUsername() {
         return username;
     }

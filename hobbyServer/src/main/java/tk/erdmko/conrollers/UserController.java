@@ -2,10 +2,13 @@ package tk.erdmko.conrollers;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 import tk.erdmko.models.OkResponse;
 import tk.erdmko.models.SimpleJsonResponse;
@@ -13,6 +16,7 @@ import tk.erdmko.users.model.User;
 import tk.erdmko.users.service.SecurityService;
 import tk.erdmko.users.service.UserService;
 
+@Validated
 @RestController
 public class UserController {
 
@@ -25,7 +29,7 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/users/register", method = RequestMethod.POST)
-    public SimpleJsonResponse registration(@RequestBody User input) {
+    public SimpleJsonResponse registration(@Valid @RequestBody User input) {
         input.setEnabled(true);
         String pass = input.getPassword();
         userService.save(input);
