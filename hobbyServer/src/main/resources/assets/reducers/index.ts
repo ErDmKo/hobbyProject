@@ -5,5 +5,6 @@ import { reg } from './reg';
 
 export const rootReducer = combineReducers({
     users,
-    auth
+    auth,
+    reg
 })

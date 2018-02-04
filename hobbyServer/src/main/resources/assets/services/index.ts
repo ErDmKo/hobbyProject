@@ -1,6 +1,6 @@
 function handleResponse(response) {
     if (!response.ok) { 
-        return Promise.reject(response.statusText);
+        return Promise.reject(response.body);
     }
 
     return response.json();
@@ -16,9 +16,12 @@ export const userService = {
 		return fetch('/users/authenticate', requestOptions)
 			.then(response => {
 				if (!response.ok) { 
-					return Promise.reject(response.statusText);
+					return new Promise((resole, reject) => {
+						response.json().then(json => {
+							reject(json);
+						});
+					})
 				}
-
 				return response.json();
 			})
 			.then(user => {

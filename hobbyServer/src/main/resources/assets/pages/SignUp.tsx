@@ -5,10 +5,17 @@ import { connect } from 'react-redux';
 import { userActions } from '../actions/user.actions';
 
 export interface Props {
-    dispatch: Function
+    dispatch: Function,
+    errors: Array<FieldError>
 }
+export interface FieldError {
+  field: string,
+  message: string
+};
+
 export interface State {
-    errors: Object,
+    auth: boolean,
+    errors: Array<FieldError>,
     user: {
         name: string,
         password: string
@@ -24,7 +31,8 @@ export class SignUpPage extends React.Component<Props, State> {
 
     // set the initial component state
     this.state = {
-      errors: {},
+      auth: false,
+      errors: [],
       user: {
         name: '',
         password: ''

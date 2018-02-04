@@ -55,7 +55,7 @@ public class UserController {
         return info;
     }
     @RequestMapping(value = "/users/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<OAuth2AccessToken>  auth(@RequestBody User input) throws HttpRequestMethodNotSupportedException {
+    public ResponseEntity<OAuth2AccessToken>  auth(@Valid @RequestBody User input) throws HttpRequestMethodNotSupportedException {
         return securityService.autoLoginToken(input.getUsername(), input.getPassword());
     }
 

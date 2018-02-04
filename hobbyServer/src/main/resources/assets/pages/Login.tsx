@@ -4,6 +4,7 @@ import { UserForm } from '../components/UserForm';
 import { Props, State } from './SignUp'
 import { connect } from 'react-redux';
 import { userActions } from '../actions/user.actions';
+
 export class LoginPage extends React.Component<Props, State> {
 
   /**
@@ -14,7 +15,8 @@ export class LoginPage extends React.Component<Props, State> {
 
     // set the initial component state
     this.state = {
-      errors: {},
+      auth: false,
+      errors: [],
       user: {
         name: '',
         password: ''
@@ -34,7 +36,6 @@ export class LoginPage extends React.Component<Props, State> {
         if (name && password) {
             dispatch(userActions.login(name, password));
         }
-        console.log('password:', this.state.user.password);
     }
 
   /**
@@ -58,10 +59,10 @@ export class LoginPage extends React.Component<Props, State> {
   render() {
     return (
       <UserForm
-        title={"Login"}
+        title={`Login`}
         onSubmit={this.processForm}
         onChange={this.changeUser}
-        errors={this.state.errors}
+        errors={this.state.errors.concat(this.props.errors)}
         user={this.state.user}
       />
     );
@@ -69,7 +70,9 @@ export class LoginPage extends React.Component<Props, State> {
 
 }
 const mapStateToProps = (state) => {
-    const { loggingIn } = state.auth;
-    return { loggingIn };
+    return {
+      errors: state.auth.errors && state.auth.errors.fieldErrors || [],
+      loggingIn: state.auth.loggingIn
+    };
 }
 export default connect(mapStateToProps)(LoginPage);

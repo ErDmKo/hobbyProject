@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardText } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import { FieldError } from '../pages/SignUp';
 
 
 export const UserForm = ({
@@ -12,18 +13,30 @@ export const UserForm = ({
       onChange,
       errors,
       user,
-}) => (
-      <Card className="container">
+}: {
+  title: string
+  onSubmit: any,
+  onChange: any,
+  errors: FieldError[],
+  user: any
+}) => {
+    const getErrors = (field) => errors
+      .filter(e => e.field == field)
+      .map(e => e.message);
+    return <Card className="container">
         <form action="/" onSubmit={onSubmit}>
           <h2 className="card-heading">{title}</h2>
 
-          {errors.summary && <p className="error-message">{errors.summary}</p>}
+          {errors.length ? <p className="error-message">{
+              getErrors('Auth')
+              .map((message, i) => <span key={i}>{message}</span>)
+          }</p> : ""}
 
           <div className="field-line">
             <TextField
               floatingLabelText="Name"
+              errorText={getErrors('username').join(", ")}
               name="name"
-              errorText={errors.name}
               onChange={onChange}
               value={user.name}
             />
@@ -32,19 +45,19 @@ export const UserForm = ({
           <div className="field-line">
             <TextField
               floatingLabelText="Password"
+              errorText={getErrors('password').join(", ")}
+              onChange={onChange}
               type="password"
               name="password"
-              onChange={onChange}
-              errorText={errors.password}
               value={user.password}
             />
           </div>
 
           <div className="button-line">
-            <RaisedButton type="submit" label="Create New Account" primary />
+            <RaisedButton type="submit" label={title} primary />
           </div>
 
-          <CardText>Already have an account? <Link to={'/login'}>Log in</Link></CardText>
+          {title.toLowerCase() != "login" ? <CardText>Already have an account? <Link to={'/login'}>Log in</Link></CardText> : '' }
         </form>
       </Card>
-);
+};
