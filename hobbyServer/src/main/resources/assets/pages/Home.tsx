@@ -17,11 +17,6 @@ interface State {
 class HomePage extends React.Component<Props, State>  {
   constructor(props) {
     super(props);
-
-    // set the initial component state
-    this.state = {
-      userName: props.userName 
-    };
   }
   componentDidMount() {
     const { dispatch } = this.props;
@@ -30,7 +25,7 @@ class HomePage extends React.Component<Props, State>  {
   render() {
     return <Card className="container">
       <CardTitle title="React Application" subtitle="This is the home page." />
-      <User userName={this.state.userName}></User>
+      <User userName={this.props.userName}></User>
     </Card>
   }
 };

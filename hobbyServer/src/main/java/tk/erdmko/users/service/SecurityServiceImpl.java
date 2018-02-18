@@ -17,8 +17,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 
@@ -44,9 +46,9 @@ public class SecurityServiceImpl implements SecurityService  {
 
     @Override
     public String findLoggedInUsername() {
-        Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
-        if (userDetails instanceof UserDetails) {
-            return ((UserDetails) userDetails).getUsername();
+        Object authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof OAuth2Authentication) {
+            return ((OAuth2Authentication) authentication).getUserAuthentication().getName();
         }
 
         return null;
@@ -59,6 +61,9 @@ public class SecurityServiceImpl implements SecurityService  {
 
     @Value("${security.jwt.resource-ids}")
     private String resourceIds;
+
+    @Autowired
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
 
     @Autowired
     private AuthorizationServerTokenServices tokenServices;
@@ -99,10 +104,11 @@ public class SecurityServiceImpl implements SecurityService  {
             );
             OAuth2Authentication auth = new OAuth2Authentication(oauth2Request, authenticationToken);
             OAuth2AccessToken accessToken = tokenServices.createAccessToken(auth);
+            OAuth2AccessToken JWTaccessToken = jwtAccessTokenConverter.enhance(accessToken, auth);
             HttpHeaders headers = new HttpHeaders();
             headers.set("Cache-Control", "no-store");
             headers.set("Pragma", "no-cache");
-            out = new ResponseEntity<>(accessToken, headers, HttpStatus.OK);
+            out = new ResponseEntity<>(JWTaccessToken, headers, HttpStatus.OK);
         }
         return out;
     }

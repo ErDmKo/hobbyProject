@@ -3,15 +3,14 @@ import { userService } from '../services';
 import { fullBlack } from 'material-ui/styles/colors';
 
 const info = () => dispach => {
-    const request = (user) => ({
-        type: userConstants.INFO_REQUEST,
-        user
+    const request = () => dispach({
+        type: userConstants.INFO_REQUEST
     })
-    const success = (userName) => ({
+    const success = (userName) => dispach({
         type: userConstants.INFO_SUCCESS,
         userName
     })
-    const fail = (error) => ({
+    const fail = (error) => dispach({
         type: userConstants.INFO_FAILURE,
         error
     })

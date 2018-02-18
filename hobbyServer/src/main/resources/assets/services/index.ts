@@ -42,9 +42,9 @@ export const userService = {
 				'Authorization': `Bearer ${token.access_token}`
 			},
 		})
-			.then(response => {
-				return response.json();
-			});
+		.then(response => {
+			return response.text();
+		});
 	},
 	login(username, password): Promise<Object> {
 		const requestOptions = {
