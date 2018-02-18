@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
@@ -56,6 +57,11 @@ public class UserController {
     }
     @RequestMapping(value = "/users/authenticate", method = RequestMethod.POST)
     public ResponseEntity<OAuth2AccessToken>  auth(@Valid @RequestBody User input) throws HttpRequestMethodNotSupportedException {
+        String userName = input.getUsername();
+        String pass = input.getPassword();
+        if (userService.findByUsername(userName) == null) {
+            throw new BadCredentialsException("User doesn't exist");
+        }
         return securityService.autoLoginToken(input.getUsername(), input.getPassword());
     }
 

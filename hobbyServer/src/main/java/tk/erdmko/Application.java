@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -27,6 +28,7 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @Configuration
 @EnableTransactionManagement
+@EnableJpaRepositories
 @Import({ SecurityConfig.class })
 public class Application extends SpringBootServletInitializer {
     private @Value("${spring.datasource.url}") String jdbcUrl;
