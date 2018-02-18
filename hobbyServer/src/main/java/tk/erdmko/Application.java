@@ -29,7 +29,6 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories
-@Import({ SecurityConfig.class })
 public class Application extends SpringBootServletInitializer {
     private @Value("${spring.datasource.url}") String jdbcUrl;
     private @Value("${spring.datasource.username}") String username;

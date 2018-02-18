@@ -1,10 +1,25 @@
 import { userConstants } from '../constants';
 import { userService } from '../services';
+import { fullBlack } from 'material-ui/styles/colors';
 
-export const userActions = {
-    login,
-    logout,
-    register,
+const info = () => dispach => {
+    const request = (user) => ({
+        type: userConstants.INFO_REQUEST,
+        user
+    })
+    const success = (userName) => ({
+        type: userConstants.INFO_SUCCESS,
+        userName
+    })
+    const fail = (error) => ({
+        type: userConstants.INFO_FAILURE,
+        error
+    })
+    dispach(request);
+    userService
+        .info()
+        .then(success)
+        .catch(fail)
 }
 
 function login(username: string, password: string) {
@@ -49,4 +64,11 @@ function register(user) {
                 }
             );
     };
+}
+
+export const userActions = {
+    login,
+    logout,
+    register,
+    info
 }

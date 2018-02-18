@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,11 @@ import tk.erdmko.models.ValidationErrorDTO;
  */
 @ControllerAdvice
 public class RestErrorHandler {
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public String handleError404() {
+        return "index";
+    }
 
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

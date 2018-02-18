@@ -1,9 +1,12 @@
 package tk.erdmko.conrollers;
 
+import com.rabbitmq.http.client.domain.UserInfo;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
@@ -39,11 +42,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
-    @Value("${security.jwt.client-id}")
-    private String clientId;
-
-
+    @RequestMapping(value = "/users/info", method = RequestMethod.GET)
+    public String getInfo() {
+        String userName = securityService.findLoggedInUsername();
+        if (userName == null) {
+            throw new BadCredentialsException("Not auth");
+        }
+        return userName;
+    }
     @RequestMapping(value = "/users/register", method = RequestMethod.POST)
     public ResponseEntity<OAuth2AccessToken>  registration(@Valid @RequestBody User input) throws HttpRequestMethodNotSupportedException {
         input.setEnabled(true);

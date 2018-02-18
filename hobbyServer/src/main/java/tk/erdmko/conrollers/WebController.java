@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 
+import javax.annotation.security.PermitAll;
 import javax.imageio.ImageIO;
 
 import tk.erdmko.models.MessageModel;
@@ -35,7 +36,6 @@ public class WebController {
 
     @Value("${file.upload.directory}")
     private String fileUploadDirectory;
-
     @MessageMapping("/wsIn")
     public SocketResponseModel wsHandler(MessageModel message) {
         SocketResponseModel out = new SocketResponseModel(message.getText());

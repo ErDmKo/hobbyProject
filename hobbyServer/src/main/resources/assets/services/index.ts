@@ -1,11 +1,51 @@
-function handleResponse(response) {
-    if (!response.ok) { 
-        return Promise.reject(response.body);
-    }
-
-    return response.json();
+interface TokenInfo {
+	access_token: string
+	expires_in: number
+	refresh_token: string
+	token_type: string
+}
+function handleToken(response) {
+	let out: {[key: string]: string} = {};
+	if (!response.ok) {
+		return new Promise((resole, reject) => {
+			response.json().then(json => {
+				reject(json);
+			});
+		})
+	} else {
+		out = response
+			.json()
+			.then((tokenInfo: TokenInfo) => {
+				if (tokenInfo && tokenInfo.access_token) {
+					localStorage.setItem('user', JSON.stringify(tokenInfo));
+				}
+			});
+	}
+	return out;
 }
 export const userService = {
+	info(): Promise<string> {
+		const rawToken = localStorage.getItem('user')
+		let token: TokenInfo;
+		if  (rawToken) {
+			try {
+				token = JSON.parse(rawToken);
+			} catch (e) {
+			}
+		}
+		if (!token) {
+			return Promise.reject('Empty or wrong token');
+		}
+		return fetch('/users/info', {
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token.access_token}`
+			},
+		})
+			.then(response => {
+				return response.json();
+			});
+	},
 	login(username, password): Promise<Object> {
 		const requestOptions = {
 			method: 'POST',
@@ -14,22 +54,8 @@ export const userService = {
 		};
 
 		return fetch('/users/authenticate', requestOptions)
-			.then(response => {
-				if (!response.ok) { 
-					return new Promise((resole, reject) => {
-						response.json().then(json => {
-							reject(json);
-						});
-					})
-				}
-				return response.json();
-			})
-			.then(user => {
-				if (user && user.token) {
-					localStorage.setItem('user', JSON.stringify(user));
-				}
-				return user;
-			});
+			.then(handleToken)
+			.then();
 	},
     logout() {
         localStorage.removeItem('user');
@@ -41,6 +67,7 @@ export const userService = {
                 body: JSON.stringify(user)
             };
 
-        return fetch('/users/register', requestOptions).then(handleResponse);
+		return fetch('/users/register', requestOptions)
+			.then(handleToken);
     }
 }
