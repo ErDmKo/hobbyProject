@@ -7,6 +7,7 @@ import { userActions } from '../actions/user.actions';
 export interface Props {
     dispatch: Function,
     errors: Array<FieldError>
+    success: boolean
 }
 export interface FieldError {
   field: string,
@@ -84,10 +85,17 @@ export class SignUpPage extends React.Component<Props, State> {
         onChange={this.changeUser}
         errors={this.state.errors}
         user={this.state.user}
+        success={this.props.success}
       />
     );
   }
 
 }
+export const mapStateToProps = (state) => {
+    return {
+      errors: state.auth.errors && state.auth.errors.fieldErrors || [],
+      success: state.auth.loggedIn
+    };
+}
 
-export default connect()(SignUpPage);
+export default connect(mapStateToProps)(SignUpPage);

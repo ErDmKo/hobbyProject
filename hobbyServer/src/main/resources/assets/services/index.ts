@@ -43,7 +43,12 @@ export const userService = {
 			},
 		})
 		.then(response => {
-			return response.text();
+			if (response.ok) {
+				return response.text();
+			} else {
+				return response.json()
+					.then(json => Promise.reject(json));
+			}
 		});
 	},
 	login(username, password): Promise<Object> {

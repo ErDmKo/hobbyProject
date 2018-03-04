@@ -17,8 +17,7 @@ const info = () => dispach => {
     dispach(request);
     userService
         .info()
-        .then(success)
-        .catch(fail)
+        .then(success, fail)
 }
 
 function login(username: string, password: string) {

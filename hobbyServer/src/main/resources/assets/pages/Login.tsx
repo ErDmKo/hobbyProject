@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { UserForm } from '../components/UserForm';
-import { Props, State } from './SignUp'
+import { Props, State, mapStateToProps } from './SignUp'
 import { connect } from 'react-redux';
 import { userActions } from '../actions/user.actions';
 
@@ -64,15 +64,10 @@ export class LoginPage extends React.Component<Props, State> {
         onChange={this.changeUser}
         errors={this.state.errors.concat(this.props.errors)}
         user={this.state.user}
+        success={this.props.success}
       />
     );
   }
 
-}
-const mapStateToProps = (state) => {
-    return {
-      errors: state.auth.errors && state.auth.errors.fieldErrors || [],
-      loggingIn: state.auth.loggingIn
-    };
 }
 export default connect(mapStateToProps)(LoginPage);
