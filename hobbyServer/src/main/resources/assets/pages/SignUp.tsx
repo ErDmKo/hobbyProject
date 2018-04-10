@@ -83,7 +83,7 @@ export class SignUpPage extends React.Component<Props, State> {
         title={'SignUp'}
         onSubmit={this.processForm}
         onChange={this.changeUser}
-        errors={this.state.errors}
+        errors={this.state.errors.concat(this.props.errors)}
         user={this.state.user}
         success={this.props.success}
       />

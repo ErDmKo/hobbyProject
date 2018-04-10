@@ -13,7 +13,7 @@ interface State {
     stompClient?: any
 };
 
-class SocketForm extends React.Component<Props, State> {
+export class SocketForm extends React.Component<Props, State> {
   callBacks: Function[];
   constructor(props) {
       super(props);

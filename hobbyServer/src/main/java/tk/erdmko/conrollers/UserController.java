@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import tk.erdmko.models.OkResponse;
@@ -43,11 +45,12 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/users/info", method = RequestMethod.GET)
-    public String getInfo() {
+    public String getInfo(HttpServletRequest request) {
         String userName = securityService.findLoggedInUsername();
         if (userName == null) {
             throw new BadCredentialsException("Not auth");
         }
+
         return userName;
     }
     @RequestMapping(value = "/users/register", method = RequestMethod.POST)

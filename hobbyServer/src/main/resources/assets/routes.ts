@@ -5,18 +5,27 @@ import LogoutPage from './pages/Logout';
 
 export const routes = [{
         path: '/',
+        menuLabel: 'Home',
         component: HomePage,
-        isPrivate: true
+        showAnon: true,
+        forAll: true
     }, {
         path: '/signup',
+        menuLabel: 'Register',
         component: SignUpPage,
-        isPrivate: false
+        showAnon: true,
+        forAll: false
     }, {
         path: '/login',
+        menuLabel: 'Login',
         component: LoginPage,
-        isPrivate: false
+        showAnon: true,
+        forAll: false
     }, {
         path: '/logout',
+        menuLabel: 'Logout',
         component: LogoutPage,
+        showAnon: false,
+        forAll: false
     }
 ] 

@@ -36,6 +36,7 @@ public class WebController {
 
     @Value("${file.upload.directory}")
     private String fileUploadDirectory;
+
     @MessageMapping("/wsIn")
     public SocketResponseModel wsHandler(MessageModel message) {
         SocketResponseModel out = new SocketResponseModel(message.getText());

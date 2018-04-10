@@ -22,10 +22,24 @@ export const UserForm = ({
   user: any,
   success: boolean
 }) => {
+    const fields = [{
+      label: 'Name',
+      apiField: 'username',
+      name: 'name',
+      type: 'text'
+    }, {
+      label: 'Password',
+      apiField: 'password',
+      name: 'password',
+      type: 'password'
+    }]
     const getErrors = (field) => errors
       .filter(e => e.field == field)
       .map(e => e.message);
-    const authErrors = getErrors('Auth');
+    const fieldErrors = fields.map(f => f.apiField);
+    const authErrors = errors
+      .filter(f => !fieldErrors.includes(f.field))
+      .map(e => e.message)
     return success ? <Redirect push to="/"/> :
     <Card className="container">
         <form action="/" onSubmit={onSubmit}>
@@ -35,25 +49,18 @@ export const UserForm = ({
             {authErrors.length && <p className="error-message">{
                 authErrors.map((message, i) => <span key={i}>{message}</span>)
             }</p> || ''}
-            <div>
+            {fields.map((f, i) =>
+            <div key={i}>
               <TextField
-                floatingLabelText="Name"
-                errorText={getErrors('username').join(", ")}
-                name="name"
+                floatingLabelText={f.name}
+                errorText={getErrors(f.apiField).join(", ")}
+                name={f.name}
+                type={f.type}
                 onChange={onChange}
-                value={user.name}
+                value={user[f.name]}
               />
             </div>
-            <div>
-              <TextField
-                floatingLabelText="Password"
-                errorText={getErrors('password').join(", ")}
-                onChange={onChange}
-                type="password"
-                name="password"
-                value={user.password}
-              />
-            </div>
+            )}
           </CardText>
 
           <CardActions>

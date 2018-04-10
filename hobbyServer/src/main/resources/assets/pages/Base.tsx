@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { FlatButton } from 'material-ui';
 import { connect } from 'react-redux';
 import { userActions } from '../actions/user.actions';
+import { routes } from '../routes';
 
 class Base extends React.Component<{dispatch: Function, user: {loggedIn: boolean}}, {}>  {
     constructor(props) {
@@ -14,26 +15,18 @@ class Base extends React.Component<{dispatch: Function, user: {loggedIn: boolean
         dispatch(userActions.info());
     }
     render() {
+        const isAnon = this.props.user.loggedIn;
         return <div>
-            <div className="top-bar">
-                <div className="top-bar-right">
-                    <FlatButton
-                        containerElement={<Link to="/" />}
-                        label="Home" />
-                    {!this.props.user.loggedIn &&
-                        <span><FlatButton
-                            containerElement={<Link to="/login" />}
-                            label="Log in" />
-                            <FlatButton
-                                containerElement={<Link to="/signup" />}
-                                label="Sign up" />
-                        </span> || <FlatButton
-                            containerElement={<Link to="/logout" />}
-                            label="logout" />}
-                </div>
-            </div>
+                {routes
+                    .filter(r => r.forAll || (isAnon ? !r.showAnon : r.showAnon))
+                    .map(r => {
+                    return <FlatButton
+                        key={r.path}
+                        containerElement={<Link to={r.path} />}
+                        label={r.menuLabel} />
+                })}
             {this.props.children}
-        </div>
+            </div>
     }
 }
 const mapStateToProps = (state) => {
