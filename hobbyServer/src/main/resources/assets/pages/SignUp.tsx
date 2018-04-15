@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { userActions } from '../actions/user.actions';
 
 export interface Props {
-    dispatch: Function,
-    errors: Array<FieldError>
-    success: boolean
+  dispatch: Function,
+  errors: Array<FieldError>
+  success: boolean
 }
 export interface FieldError {
   field: string,
@@ -15,12 +15,12 @@ export interface FieldError {
 };
 
 export interface State {
-    auth: boolean,
-    errors: Array<FieldError>,
-    user: {
-        name: string,
-        password: string
-    }
+  auth: boolean,
+  errors: Array<FieldError>,
+  user: {
+    name: string,
+    password: string
+  }
 }
 export class SignUpPage extends React.Component<Props, State> {
 
@@ -64,18 +64,18 @@ export class SignUpPage extends React.Component<Props, State> {
    */
   processForm = (event) => {
     event.preventDefault();
-	const { dispatch } = this.props;
-	const { name, password } = this.state.user;
-	if (name && password) {
-		dispatch(userActions.register({
-			username: name, 
-			password
-		}));
-	}
+    const { dispatch } = this.props;
+    const { name, password } = this.state.user;
+    if (name && password) {
+      dispatch(userActions.register({
+        username: name,
+        password
+      }));
+    }
   }
 
   /**
-   * Render the component.
+  * Render the component.
    */
   render() {
     return (
@@ -92,10 +92,10 @@ export class SignUpPage extends React.Component<Props, State> {
 
 }
 export const mapStateToProps = (state) => {
-    return {
-      errors: state.auth.errors && state.auth.errors.fieldErrors || [],
-      success: state.auth.loggedIn
-    };
+  return {
+    errors: state.auth.errors && state.auth.errors.fieldErrors || [],
+    success: state.auth.loggedIn
+  };
 }
 
 export default connect(mapStateToProps)(SignUpPage);

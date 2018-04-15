@@ -24,6 +24,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -48,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .ignoring()
             .antMatchers("/*.js");
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -59,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         converter.setSigningKey(signingKey);
         return converter;
     }
+
     @Bean
     public TokenStore tokenStore() {
         return new JwtTokenStore(accessTokenConverter());

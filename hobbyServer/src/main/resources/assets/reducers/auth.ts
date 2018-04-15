@@ -5,7 +5,7 @@ const initialState = token ? {
     token,
 } : {};
 
-export function auth(state = initialState, action) {
+export const auth = (state = initialState, action) => {
     switch (action.type) {
         case userConstants.REGISTER_REQUEST:
             return {

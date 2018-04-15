@@ -1,71 +1,84 @@
-import * as SockJS from 'sockjs-client';
-import * as Stomp from 'stompjs/lib/stomp';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { Card, CardText, CardTitle, CardActions } from 'material-ui/Card';
+import TextField from 'material-ui/TextField';
+import { connect } from 'react-redux';
+import { socketActions } from '../actions/socket.actions';
 import { ServerTextMessage } from './ServerTextMessage';
 import { ServerImageMessage } from './ServerImageMessage';
+import { socket } from '../reducers/socket';
+import { RaisedButton } from 'material-ui';
 
 interface Props {
+    clientMessage: string,
+    connected: boolean,
+    serverMessage: {
+        text?: string,
+        url?: string
+    },
+    dispatch: Function
 }
 interface State {
     clientMessage: string,
-    serverMessage: string,
-    stompClient?: any
 };
 
-export class SocketForm extends React.Component<Props, State> {
-  callBacks: Function[];
-  constructor(props) {
-      super(props);
-      this.state = {
-        clientMessage: '',
-        serverMessage: ''
-      };
-      this.sendMessage = this.sendMessage.bind(this);
-      this.setText = this.setText.bind(this);
-      this.refresh = this.refresh.bind(this);
-      this.callBacks = [];
-  }
-
-  subscribe = () => {
-    let socket = new SockJS('/wsIn');
-    let stompClient= Stomp.Stomp.over(socket);
-    this.setState({ stompClient });
-    stompClient.connect({}, (frame) => {
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/wsOut', (serverMessage) => {
-            this.callBacks.forEach((fn)=>{
-                fn(serverMessage.body);
-            });
-        });
-    });
-  }
-
-  sendMessage() {
-    if (this.state.stompClient) {
-        this.state.stompClient.send(
-            "/app/wsIn",
-            {},
-            JSON.stringify({ 'text': this.state.clientMessage })
-        );
+class SocketForm extends React.Component<Props, State> {
+    constructor(props) {
+        super(props);
+        this.state = {
+            clientMessage: props.clientMessage,
+        };
     }
-  }
-  refresh(fn) {
-    this.callBacks.push(fn);
-  }
-  setText(e){
-    this.setState({clientMessage: e.target.value});
-  }
-  render() {
+    subscribe = () => {
+        this.props.dispatch(socketActions.subscribe());
+    }
+    sendMessage = () => {
+        this.props.dispatch(socketActions.send(this.state.clientMessage));
+    }
+    setText = (e) => {
+        this.setState({ clientMessage: e.target.value });
+    }
+    render() {
         return (
-            <div>
-                <div><ServerTextMessage message={this.state.serverMessage} onRefresh={this.refresh}/></div>
-                <button onClick={this.subscribe}>subscribe</button>
-                <input type="text" value={this.state.clientMessage} onChange={this.setText} />
-                <button onClick={this.sendMessage}>Send message</button>
-                <ServerImageMessage message={this.state.serverMessage} onRefresh={this.refresh}/>
-            </div>
+            <Card>
+                <CardTitle title ={'Listen server socket'}/>
+                <CardText>
+                    <ServerTextMessage
+                        text={this.props.serverMessage.text}
+                    />
+                    <ServerImageMessage
+                        url={this.props.serverMessage.url}
+                    />
+                </CardText>
+                <CardActions>
+                    <RaisedButton
+                        onClick={this.subscribe}>
+                        Subscribe
+                    </RaisedButton>
+                    <TextField
+                        floatingLabelText={'Message to send'}
+                        disabled={!this.props.connected}
+                        type={'text'}
+                        value={this.state.clientMessage}
+                        onChange={this.setText}
+                    />
+                    <RaisedButton
+                        onClick={this.sendMessage}>
+                        Send
+                    </RaisedButton>
+                </CardActions>
+            </Card>
         )
 
-  }
+    }
 }
+export const mapStateToProps = (state) => {
+    return {
+        errors: state.socket.errors,
+        connected: state.socket.connected,
+        serverMessage: state.socket.serverMessage,
+        clientMessage: state.socket.clientMessage || ''
+    };
+}
+
+export default connect(mapStateToProps)(SocketForm);

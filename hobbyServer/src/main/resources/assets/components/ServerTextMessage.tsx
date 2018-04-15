@@ -1,32 +1,23 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-export interface State {
-    url: string,
-    text: string
-    [key:string]: string
-}
 export interface Props {
-    onRefresh: Function,
-    message: string
+    url?: string,
+    text?: string
 }
 
-export class ServerTextMessage<T, E> extends React.Component<Props, State> {
-    constructor(props) {
-        super(props);
-        this.state = {
-            text: 'Init state',
-            url: ''
-        }
-    }
-    componentDidMount(){
-        this.props.onRefresh((message)=>{
-            this.setState(JSON.parse(message || {}));
-        });
-    }
-    render() {
-        return (
-            <div>Text "{this.state.text}", Url "{this.state.url}"</div>
+export const ServerTextMessage = ({
+    url,
+    text
+}: Props) => {
+    let out: JSX.Element = <span>No server messages</span>
+    if (text || url) {
+        out = (
+            <div>
+                {text ? <div>Text "{text}"</div> : ''}
+                {url ? <div>Url "{url}"</div> : ''}
+            </div>
         )
     }
+    return out;
 };

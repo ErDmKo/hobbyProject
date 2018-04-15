@@ -1,17 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { ServerTextMessage, Props, State } from './ServerTextMessage'
+import { Props } from './ServerTextMessage'
 
-export class ServerImageMessage extends ServerTextMessage<Props, State> {
-    render() {
-        if (this.state.url) {
-            return (
-                <div><img src={this.state.url}/></div>
-            )
-        } else {
-            return (
-                <div></div>
-            )
-        }
-    }
+export const ServerImageMessage = ({ url }: Props) => {
+    return url ? <div><img src={ url } /></div> : <div></div>
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Card, CardTitle, CardText } from 'material-ui/Card';
 import { User } from '../components/User'
-import { SocketForm } from '../components/SocketForm'
+import SocketForm from '../components/SocketForm'
 import { connect } from 'react-redux';
 import { userActions } from '../actions/user.actions';
 

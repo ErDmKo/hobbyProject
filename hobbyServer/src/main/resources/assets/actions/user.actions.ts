@@ -20,10 +20,19 @@ const info = () => dispach => {
         .then(success, fail)
 }
 
-function login(username: string, password: string) {
-    function request(user) { return { type: userConstants.LOGIN_REQUEST, user } }
-    function success(user) { return { type: userConstants.LOGIN_SUCCESS, user } }
-    function failure(error) { return { type: userConstants.LOGIN_FAILURE, error } }
+const login = (username: string, password: string) => {
+    const request = (user) => ({ 
+        type: userConstants.LOGIN_REQUEST, 
+        user 
+    })
+    const success = (user) => ({
+        type: userConstants.LOGIN_SUCCESS,
+        user
+    })
+    const failure = (error) => ({
+        type: userConstants.LOGIN_FAILURE,
+        error
+    })
 
     return dispatch => {
         dispatch(request({ username }));
@@ -40,14 +49,23 @@ function login(username: string, password: string) {
     };
 
 }
-function logout() {
+const logout = () => {
     userService.logout();
     return { type: userConstants.LOGOUT };
 }
 function register(user) {
-    function request(user) { return { type: userConstants.REGISTER_REQUEST, user } }
-    function success(user) { return { type: userConstants.REGISTER_SUCCESS, user } }
-    function failure(error) { return { type: userConstants.REGISTER_FAILURE, error } }
+    const request = (user) => ({
+         type: userConstants.REGISTER_REQUEST, 
+         user 
+    })
+    const success = (user) => ({
+        type: userConstants.REGISTER_SUCCESS,
+        user 
+    })
+    const failure = (error) => ({ 
+        type: userConstants.REGISTER_FAILURE, 
+        error 
+    })
 
     return dispatch => {
         dispatch(request(user));
