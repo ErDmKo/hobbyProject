@@ -26,7 +26,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: apptrack
         - name: POSTGRES_USER
-          value: apptrack
+          value: apptrackrole
         image: postgres
         imagePullPolicy: Always
         name: db
@@ -46,10 +46,12 @@ spec:
       - env:
         - name: CONFIG
           value: kubernetes
-        image: gcr.io/without-mining/github-erdmko-hobbyproject:4ff8979f29820a166f68083716692a750b112222
+        image: gcr.io/without-mining/github-erdmko-hobbyproject:7811b06967449025f48426c2e022189a762bb0bd
         imagePullPolicy: Always
         name: api
-        resources: {}
+        resources:
+          requests:
+            memory: '1Gi'
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
