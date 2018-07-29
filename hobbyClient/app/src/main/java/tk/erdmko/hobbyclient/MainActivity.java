@@ -25,8 +25,8 @@ import com.squareup.okhttp.OkHttpClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView mText;
     private ClientAPI clientAPI;
     static final int REQUEST_TAKE_PHOTO = 1;
-    private final String DEFAULT_URL = "http://10.0.2.2:8080/";
     private File storageDir;
     protected final String TAG = getClass().getSimpleName();
     private File photoFile;
@@ -51,11 +50,94 @@ public class MainActivity extends AppCompatActivity {
     private void setupConnectionFactory(String host) {
         factory.setHost(host);
     }
+    private static class QuequeTask extends AsyncTask<String, Void, String> {
+        private WeakReference<MainActivity> activityReference;
+        private WeakReference<ConnectionFactory> factoryRef;
+        private WeakReference<TextView> mTextRef;
+
+        QuequeTask(MainActivity activityReference, ConnectionFactory factoryRef, TextView mTextRef) {
+            this.activityReference = new WeakReference<>(activityReference);
+            this.factoryRef = new WeakReference<>(factoryRef);
+            this.mTextRef = new WeakReference<>(mTextRef);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            ConnectionFactory factory = factoryRef.get();
+            final MainActivity mainActivity = activityReference.get();
+            final TextView mText = mTextRef.get();
+
+            try {
+                Connection connection = factory.newConnection();
+                String QUEUE_NAME = "hello";
+                Channel channel = connection.createChannel();
+                channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(
+                                mainActivity.getApplicationContext(),
+                                "Connected",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
+
+                String message = "Hello World!";
+                channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
+
+                Consumer consumer = new DefaultConsumer(channel) {
+                    @Override
+                    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+                            throws IOException {
+                        final String message = new String(body, "UTF-8");
+                        mainActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mText.setText(String.format("Message %s", message));
+                            }
+                        });
+                    }
+                };
+                channel.basicConsume(QUEUE_NAME, true, consumer);
+            } catch (IOException e) {
+                final String message = e.toString();
+                e.printStackTrace();
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(
+                                mainActivity.getApplicationContext(),
+                                message,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+                final String message = e.toString();
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(
+                                mainActivity.getApplicationContext(),
+                                message,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
+            }
+            return null;
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mEditText = (EditText) findViewById(R.id.editText);
+        assert mEditText != null;
+        String DEFAULT_URL = "http://10.0.2.2:8080/";
         mEditText.setText(DEFAULT_URL);
         mText = (TextView) findViewById(R.id.textView);
         storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -127,87 +209,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File createImageFile() throws IOException {
-        File image = File.createTempFile(
+
+        return File.createTempFile(
                 "testImage",  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
-        return image;
     }
-    public void getQueue(View view) throws URISyntaxException {
-        URL url = null;
+    public void getQueue(View view) {
         try {
-            url = new URL(mEditText.getText().toString());
+            URL url = new URL(mEditText.getText().toString());
             setupConnectionFactory(url.getHost());
-            AsyncTask<String, Void, String> serverCallTask = new AsyncTask<String, Void, String>() {
-                @Override
-                protected String doInBackground(String... params) {
-                    Connection connection = null;
-                    try {
-                        connection = factory.newConnection();
-                        String QUEUE_NAME = "hello";
-                        Channel channel = connection.createChannel();
-                        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
-
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(
-                                        getApplicationContext(),
-                                        "Connected",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        });
-
-                        String message = "Hello World!";
-                        channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
-
-                        Consumer consumer = new DefaultConsumer(channel) {
-                            @Override
-                            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-                                    throws IOException {
-                                final String message = new String(body, "UTF-8");
-                                MainActivity.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mText.setText(String.format("Message %s", message));
-                                    }
-                                });
-                            }
-                        };
-                        channel.basicConsume(QUEUE_NAME, true, consumer);
-                    } catch (IOException e) {
-                        final String message = e.toString();
-                        e.printStackTrace();
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(
-                                        getApplicationContext(),
-                                        message,
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        });
-                    } catch (TimeoutException e) {
-                        e.printStackTrace();
-                        final String message = e.toString();
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(
-                                        getApplicationContext(),
-                                        message,
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        });
-                    }
-                    return null;
-                }
-            };
+            QuequeTask serverCallTask = new QuequeTask(this, factory, mText);
             serverCallTask.execute("1");
 
         } catch (MalformedURLException e) {
