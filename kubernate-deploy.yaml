@@ -27,6 +27,8 @@ spec:
           value: apptrack
         - name: POSTGRES_USER
           value: apptrackrole
+        - name: POSTGRES_DB
+          value: apptrackdb
         image: postgres
         imagePullPolicy: Always
         name: db

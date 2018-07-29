@@ -14,4 +14,5 @@ services:
         image: postgres
         environment:
             POSTGRES_PASSWORD: apptrack
-            POSTGRES_USER: apptrack
+            POSTGRES_DB: apptrackdb
+            POSTGRES_USER: apptrackrole
