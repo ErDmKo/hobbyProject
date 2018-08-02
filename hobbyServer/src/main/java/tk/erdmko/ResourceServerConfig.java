@@ -28,14 +28,13 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        http
-                .requestMatchers()
-                .and()
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
-                .antMatchers("/users/info", "/wsIn" ).authenticated();
+                .antMatchers("/users/info", "/wsIn" ).authenticated()
+                .and()
+                .csrf()
+                // .ignoringAntMatchers("/users/info", "/users/authenticate", "/users/register")
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
     }
 }

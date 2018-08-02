@@ -1,17 +1,9 @@
 import { userConstants } from '../constants';
-import * as SockJS from 'sockjs-client';
-import * as Stomp from 'stompjs/lib/stomp';
-import { exists } from 'fs';
-
-let service: {
-    stompClient?: any
-} = {
-
-}
+import { socketService } from '../services';
 
 const send = (message) => {
-    if (service.stompClient) {
-        service.stompClient.send(
+    if (socketService.getClient()) {
+        socketService.send(
             "/app/wsIn",
             {},
             JSON.stringify({ 'text': message })
@@ -28,23 +20,16 @@ const send = (message) => {
     }
 }
 const subscribe = () => {
-    let socket = new SockJS('/wsIn');
-    let stompClient= Stomp.Stomp.over(socket);
-    const headers = {};
-    let spliter = document.cookie.split('XSRF-TOKEN=');
-    if (spliter.length > 0) {
-        headers['X-XSRF-TOKEN'] = spliter[1].split(';')[0]
-    }
     return (dispach: Function) => {
         dispach({
             type: userConstants.SOCKET_CONNECT_START
         })
-        service.stompClient = stompClient;
-        stompClient.connect(headers, (frame) => {
+        socketService.setClient()
+        socketService.connect((frame) => {
             dispach({
                 type: userConstants.SOCKET_CONNECT_SUCCESS
             })
-            stompClient.subscribe('/wsOut', (serverMessage) => {
+            socketService.subscribe('/wsOut', (serverMessage) => {
                 dispach({
                     type: userConstants.SOCKET_CONNECT_SERVER_MESSAGE,
                     body: JSON.parse(serverMessage.body)
