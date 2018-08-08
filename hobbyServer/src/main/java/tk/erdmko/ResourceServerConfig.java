@@ -33,7 +33,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/users/info", "/wsIn" ).authenticated()
                 .and()
                 .csrf()
-                // .ignoringAntMatchers("/users/info", "/users/authenticate", "/users/register")
+                .ignoringAntMatchers("/users/info", "/users/authenticate")
+                //.ignoringAntMatchers("/users/register")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
     }

@@ -29,8 +29,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.mime.TypedByteArray;
+import tk.erdmko.hobbyclient.request.AuthRequest;
+import tk.erdmko.hobbyclient.response.AuthResult;
+import tk.erdmko.hobbyclient.response.FieldError;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -59,6 +68,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mAddresView;
+    final String DEFAULT_URL = "http://10.0.2.2:8080/";
     private View mProgressView;
     private View mLoginFormView;
 
@@ -71,6 +82,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
+        mAddresView = (EditText) findViewById(R.id.serverAddress);
+        assert mAddresView != null;
+        mAddresView.setText(DEFAULT_URL);
+        mEmailView.requestFocus();
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -155,10 +170,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String address = mAddresView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
-
+        if (!TextUtils.isEmpty(address) && !isAddressValid(address)) {
+            mAddresView.setError(getString(R.string.error_invalid_address));
+        }
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
@@ -185,9 +203,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(email, password, address);
             mAuthTask.execute((Void) null);
         }
+    }
+
+    private boolean isAddressValid(String address) {
+        return address.length() > 4;
     }
 
     private boolean isEmailValid(String email) {
@@ -294,49 +316,70 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, AuthResult> {
 
         private final String mEmail;
         private final String mPassword;
+        private final String mAddress;
+        private ClientAPI clientAPI;
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, String address) {
             mEmail = email;
             mPassword = password;
+            mAddress = address;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        protected AuthResult doInBackground(Void... params) {
+            clientAPI = new RestAdapter.Builder()
+                    .setEndpoint(mAddress)
+                    .build()
+                    .create(ClientAPI.class);
 
+            AuthResult result = new AuthResult();
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                result = clientAPI.auth(new AuthRequest(mPassword, mEmail));
+            } catch (RetrofitError e) {
+                if (Arrays.asList(new Integer[] {403, 400}).contains(e.getResponse().getStatus())) {
+                     result = (AuthResult) e.getBodyAs(AuthResult.class);
                 }
             }
-
-            // TODO: register the new account here.
-            return true;
+            return result;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final AuthResult result) {
             mAuthTask = null;
             showProgress(false);
-
-            if (success) {
+            if (result == null) {
+                mAddresView.setError(getText(R.string.error_invalid_address));
+                return;
+            }
+            if (result.error != null) {
+                mAddresView.setError(result.error_description);
+                return;
+            }
+            if (result.fieldErrors == null) {
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                EditText view = null;
+                for (FieldError error : result.fieldErrors) {
+                    switch (error.field) {
+                        case "password":
+                            view = mPasswordView;
+                            break;
+                        case "username":
+                            view = mEmailView;
+                            break;
+                        case "Auth":
+                            view = mAddresView;
+                            break;
+                    }
+                    if (view != null) {
+                        view.setError(error.message);
+                        view.requestFocus();
+                    }
+                }
             }
         }
 

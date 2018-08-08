@@ -1,19 +1,27 @@
 package tk.erdmko.hobbyclient;
 
+import retrofit.http.Body;
+import retrofit.http.Field;
 import retrofit.http.GET;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.Part;
 import retrofit.mime.TypedFile;
+import tk.erdmko.hobbyclient.request.AuthRequest;
+import tk.erdmko.hobbyclient.response.HealthCheck;
+import tk.erdmko.hobbyclient.response.AuthResult;
 
 /**
  * Created by erdmko on 05/10/15.
  */
 public interface ClientAPI {
     @GET("/client.json")
-    public ServerData getServerData();
+    public HealthCheck getServerData();
 
     @Multipart
     @POST("/upload")
-    public ServerData uploadFile(@Part("file") TypedFile file, @Part("name") String name);
+    public HealthCheck uploadFile(@Part("file") TypedFile file, @Part("name") String name);
+
+    @POST("/users/authenticate")
+    public AuthResult auth(@Body AuthRequest request);
 }

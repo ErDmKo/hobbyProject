@@ -9,6 +9,7 @@ interface TokenInfo {
 }
 function apiFetch(...args) {
 	let [url, options] = args;
+	options.credentials = 'same-origin';
 	options.headers = {
 		...options.headers,
 		...getXSRF()
@@ -75,7 +76,6 @@ export const userService = {
 			return Promise.reject('Empty or wrong token');
 		}
 		return apiFetch('/users/info', {
-			credentials: 'same-origin',
 			headers: {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token.access_token}`
@@ -92,7 +92,6 @@ export const userService = {
 	},
 	login(username, password): Promise<Object> {
 		const requestOptions = {
-			credentials: 'same-origin' as RequestCredentials,
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ username, password })
@@ -107,7 +106,6 @@ export const userService = {
     },
     register(user) {
         const requestOptions = {
-				credentials: 'same-origin' as RequestCredentials,
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(user)

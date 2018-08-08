@@ -35,6 +35,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.mime.TypedFile;
+import tk.erdmko.hobbyclient.response.HealthCheck;
 
 public class MainActivity extends AppCompatActivity {
     private EditText mEditText;
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mEditText = (EditText) findViewById(R.id.editText);
+        mEditText = (EditText) findViewById(R.id.serverAddress);
         assert mEditText != null;
         String DEFAULT_URL = "http://10.0.2.2:8080/";
         mEditText.setText(DEFAULT_URL);
@@ -185,13 +186,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        final ServerData serverData = clientAPI.uploadFile(
+                        final HealthCheck healthCheck = clientAPI.uploadFile(
                                 new TypedFile("image/jpeg", photoFile),
                                 "testFile");
                         MainActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mText.setText(String.format("%s exeptions %s", serverData.text, serverData.reason));
+                                mText.setText(String.format("%s exeptions %s", healthCheck.text, healthCheck.reason));
                             }
                         });
                     } catch (RetrofitError err) {
@@ -241,8 +242,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        ServerData serverData = clientAPI.getServerData();
-                        final String text = serverData.text;
+                        HealthCheck healthCheck = clientAPI.getServerData();
+                        final String text = healthCheck.text;
                         MainActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
