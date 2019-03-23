@@ -77,9 +77,6 @@ dependencies {
     compile "org.hibernate:hibernate-validator:5.4.1.Final"
 
 }
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.5'
-}
 /*
 allprojects {
     gradle.projectsEvaluated {
