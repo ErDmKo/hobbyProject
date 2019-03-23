@@ -34,7 +34,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-     CachingConnectionFactory connectionFactory() {
+    CachingConnectionFactory connectionFactory() {
         CachingConnectionFactory connectionFactory =
                 new CachingConnectionFactory(host);
         return connectionFactory;

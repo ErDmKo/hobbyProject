@@ -29,12 +29,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .antMatchers("/users/info", "/wsIn" ).authenticated()
+                    .antMatchers("/users/info", "/wsIn", "/client.json", "/upload").authenticated()
+                    .anyRequest().permitAll()
                 .and()
-                .csrf()
-                .ignoringAntMatchers("/users/info", "/users/authenticate")
-                //.ignoringAntMatchers("/users/register")
+                    .csrf()
+                    .ignoringAntMatchers("/users/info", "/users/authenticate", "/upload")
+                    .ignoringAntMatchers("/users/register")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
     }

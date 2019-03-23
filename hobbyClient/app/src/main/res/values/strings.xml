@@ -13,10 +13,13 @@
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_invalid_address">This address is too short</string>
+    <string name="error_empty_token">Access token is empty</string>
+    <string name="error_invalid_resp">Invalid response from server</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
     <string name="server_addres">Server Address</string>
+    <string name="error_empty_server">Empty server URL</string>
 </resources>

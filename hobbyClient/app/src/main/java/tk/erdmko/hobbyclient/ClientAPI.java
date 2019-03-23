@@ -3,6 +3,7 @@ package tk.erdmko.hobbyclient;
 import retrofit.http.Body;
 import retrofit.http.Field;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.Part;
@@ -16,11 +17,11 @@ import tk.erdmko.hobbyclient.response.AuthResult;
  */
 public interface ClientAPI {
     @GET("/client.json")
-    public HealthCheck getServerData();
+    public HealthCheck getServerData(@Header("Authorization") String auth);
 
     @Multipart
     @POST("/upload")
-    public HealthCheck uploadFile(@Part("file") TypedFile file, @Part("name") String name);
+    public HealthCheck uploadFile(@Header("Authorization") String auth, @Part("file") TypedFile file, @Part("name") String name);
 
     @POST("/users/authenticate")
     public AuthResult auth(@Body AuthRequest request);

@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { socketActions } from '../actions/socket.actions';
 import { ServerTextMessage } from './ServerTextMessage';
 import { ServerImageMessage } from './ServerImageMessage';
-import { socket } from '../reducers/socket';
 import { RaisedButton } from 'material-ui';
 
 interface Props {

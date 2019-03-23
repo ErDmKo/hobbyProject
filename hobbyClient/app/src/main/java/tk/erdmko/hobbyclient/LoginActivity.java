@@ -3,6 +3,7 @@ package tk.erdmko.hobbyclient;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -42,6 +43,7 @@ import tk.erdmko.hobbyclient.response.AuthResult;
 import tk.erdmko.hobbyclient.response.FieldError;
 
 import static android.Manifest.permission.READ_CONTACTS;
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 /**
  * A login screen that offers login via email/password.
@@ -77,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Set up the login form.
+        // Set up tetsthe login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -338,7 +340,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             AuthResult result = new AuthResult();
             try {
-                result = clientAPI.auth(new AuthRequest(mPassword, mEmail));
+                result = clientAPI.auth(new AuthRequest(mEmail, mPassword));
             } catch (RetrofitError e) {
                 if (Arrays.asList(new Integer[] {403, 400}).contains(e.getResponse().getStatus())) {
                      result = (AuthResult) e.getBodyAs(AuthResult.class);
@@ -360,7 +362,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return;
             }
             if (result.fieldErrors == null) {
-                finish();
+                if (result.access_token != null) {
+                    nextActivity(result.access_token);
+                } else {
+                    mAddresView.setError(getText(R.string.error_invalid_resp));
+                }
             } else {
                 EditText view = null;
                 for (FieldError error : result.fieldErrors) {
@@ -388,6 +394,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+    }
+    final static String TOKEN_MESSAGE = "token";
+    final static String SERVER_MESSAGE = "server";
+
+    private void nextActivity(String message) {
+        Intent intent = new Intent(this, MainActivity.class);
+        // TODO pass all fields to next activity
+        intent.putExtra(TOKEN_MESSAGE, message);
+        intent.putExtra(SERVER_MESSAGE, mAddresView.getText().toString());
+        startActivity(intent);
     }
 }
 

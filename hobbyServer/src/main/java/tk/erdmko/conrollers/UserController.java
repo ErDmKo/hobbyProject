@@ -45,13 +45,8 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/users/info", method = RequestMethod.GET)
-    public String getInfo(HttpServletRequest request) {
-        String userName = securityService.findLoggedInUsername();
-        if (userName == null) {
-            throw new BadCredentialsException("Not auth");
-        }
-
-        return userName;
+    public String getInfo() {
+        return securityService.findLoggedInUsername();
     }
     @RequestMapping(value = "/users/register", method = RequestMethod.POST)
     public ResponseEntity<OAuth2AccessToken>  registration(@Valid @RequestBody User input) throws HttpRequestMethodNotSupportedException {
